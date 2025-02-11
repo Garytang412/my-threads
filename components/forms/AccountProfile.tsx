@@ -19,6 +19,8 @@ import { z } from 'zod';
 import Image from "next/image";
 import { isBase64Image } from '@/lib/utils';
 import { useUploadThing } from '@/lib/uploadthing';
+import { updateUser } from '@/lib/actions/user.actions';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface Props {
     user: {
@@ -35,6 +37,8 @@ interface Props {
 export default function AccountProfile({ user, btnTitle }: Props) {
     const [files, setFiles] = useState<File[]>([]);
     const { startUpload } = useUploadThing('imageUploader'); // ? "media" before? 
+    const router = useRouter();
+    const pathname = usePathname();
 
 
     const form = useForm({
@@ -71,7 +75,16 @@ export default function AccountProfile({ user, btnTitle }: Props) {
                 values.profile_photo = imgRes[0].url;
             }
         }
-        // TODO: update user in mongoDB
+        await updateUser({
+            username: values.username,
+            name: values.name,
+            bio: values.bio,
+            image: values.profile_photo,
+            userId: user.id,
+            path: pathname,
+        });
+        if (pathname === '/profile/edit') { router.back(); }
+        else { router.push('/'); }
     }
 
     return (
