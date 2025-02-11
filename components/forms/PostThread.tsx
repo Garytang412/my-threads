@@ -46,9 +46,9 @@ function PostThread({ userId }: { userId: string }) {
         }
     });
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         console.log('');
-
+        // TODO: await createThread();
     }
 
     return (

@@ -22,8 +22,8 @@ export async function updateUser({
     image,
     path,
 }: UserParams): Promise<void> {
-    await connectToDB();
     try {
+        await connectToDB();
         await User.findOneAndUpdate(
             { id: userId },
             {
@@ -40,7 +40,7 @@ export async function updateUser({
             revalidatePath(path);
         }
     } catch (error: any) {
-        throw new Error(`Failed to create/update user: ${error.message}`)
+        throw new Error(`Failed to create/update user: ${error.message}`);
     }
 
 }
@@ -56,4 +56,3 @@ export async function fetchUser(userId: string) {
     }
 
 }
-
