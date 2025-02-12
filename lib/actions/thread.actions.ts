@@ -1,3 +1,4 @@
+'use server'
 import { revalidatePath } from "next/cache";
 import Thread from "../models/thread.model";
 import User from "../models/user.model";
@@ -20,20 +21,20 @@ export async function createThread({
     try {
         connectToDB();
         // create thread
-        const createThread = await Thread.create({
+        const createdThread = await Thread.create({
             text,
             author,
             community: null, // TODO: need work on community later
         });
         // add thread to the user 
         await User.findByIdAndUpdate(author, {
-            $push: { threads: createThread._id }
+            $push: { threads: createdThread._id }
         });
 
         revalidatePath(path);
 
     } catch (error: any) {
-        throw new Error(`Failed to create/update user: ${error.message}`);
+        throw new Error(`Failed to post thread: ${error.message}`);
     }
 }
 

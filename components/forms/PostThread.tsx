@@ -15,28 +15,20 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { usePathname, useRouter } from 'next/navigation';
-// need to update later
-import { updateUser } from '@/lib/actions/user.actions';
+
 import { ThreadValidation } from '@/lib/validations/thread';
+import { createThread } from '@/lib/actions/thread.actions';
 
 
 interface Props {
-    user: {
-        id: string,
-        objectId: string,
-        username: string,
-        name: string,
-        bio: string,
-        image: string,
-    },
-    btnTitle: string,
+    userId: string
 }
 
 
 
-function PostThread({ userId }: { userId: string }) {
+function PostThread({ userId }: Props) {
     const router = useRouter();
-    const pathName = usePathname();
+    const pathname = usePathname();
 
     const form = useForm({
         resolver: zodResolver(ThreadValidation),
@@ -46,9 +38,16 @@ function PostThread({ userId }: { userId: string }) {
         }
     });
 
-    const onSubmit = async () => {
+    const onSubmit = async (values: z.infer<typeof ThreadValidation>) => {
         console.log('');
         // TODO: await createThread();
+        await createThread({
+            text: values.thread,
+            author: userId,
+            communityId: null, // TODO: need to be done later.
+            path: pathname,
+        });
+        router.push('/');
     }
 
     return (
