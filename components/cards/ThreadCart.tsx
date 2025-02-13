@@ -65,12 +65,14 @@ async function ThreadCard({
                                     width={24} height={24}
                                     className="cursor-pointer object-contain"
                                 />
-                                <Image
-                                    src="/assets/reply.svg"
-                                    alt="reply"
-                                    width={24} height={24}
-                                    className="cursor-pointer object-contain"
-                                />
+                                <Link className="" href={`/thread/${id}`}>
+                                    <Image
+                                        src="/assets/reply.svg"
+                                        alt="reply"
+                                        width={24} height={24}
+                                        className="cursor-pointer object-contain"
+                                    />
+                                </Link>
                                 <Image
                                     src="/assets/repost.svg"
                                     alt="repost"
@@ -84,6 +86,13 @@ async function ThreadCard({
                                     className="cursor-pointer object-contain"
                                 />
                             </div>
+                            {isComment && comments.length > 0 && (
+                                <Link href={`/thread/${id}`}>
+                                    <p className="mt-1 text-subtle-medium text-gray-1">
+                                        {comments.length}
+                                    </p>
+                                </Link>
+                            )}
                         </div>
                     </div>
                 </div>
