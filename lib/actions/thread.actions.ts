@@ -10,7 +10,7 @@ interface ThreadParams {
     communityId: string | null,
     path: string,
 }
-
+// Post thread:
 export async function createThread({
     text,
     author,
@@ -38,3 +38,38 @@ export async function createThread({
     }
 }
 
+// Get threads(not comments -> parentId: null || undefined):
+export async function fetchThreads(pageNumber = 1, pageSize = 20) {
+    try {
+        connectToDB();
+        const skipAmount = (pageNumber - 1) * pageSize; // for pagenate:
+
+        const threadsQuery = Thread.find({ parentId: { $in: [null, undefined] } }) // no parentId means thread not comment.
+            .sort({ createAt: 'desc' })
+            .skip(skipAmount)
+            .limit(pageSize)
+            .populate({ path: 'author', model: User })
+            .populate({
+                path: 'children',
+                populate: {
+                    path: 'author',
+                    model: User,
+                    select: '_id name parentId image'
+                }
+            });
+
+        const totalThreadsCount = await Thread.countDocuments({ parentId: { $in: [null, undefined] } });
+        const threads = await threadsQuery.exec();
+        const isNext = totalThreadsCount > skipAmount + threads.length;
+
+        return { threads, isNext }
+
+
+    } catch (error: any) {
+        throw new Error(`Fetch threads error: ${error.message}`);
+    }
+}
+
+
+
+// 
