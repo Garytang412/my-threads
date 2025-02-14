@@ -70,6 +70,36 @@ export async function fetchThreads(pageNumber = 1, pageSize = 20) {
     }
 }
 
+// Get one thread by id
+export async function fetchThreadById(threadId: string) {
+    try {
+        await connectToDB();
 
+        const thread = Thread.findById(threadId)
+            .populate({
+                path: 'author',
+                model: User,
+                select: '_id id name image'
+            })
+            .populate({
+                path: 'children',
+                populate: [
+                    {
+                        path: 'author',
+                        model: User,
+                        select: '_id id name parentId image'
+                    },
+                    {
+                        path: 'children',
+                        model: Thread,
+                        select: '_id id name parentId image'
+                    }
+                ]
+            })
+            .exec();
+        return thread;
 
-// 
+    } catch (error: any) {
+        throw new Error(`Get one thread error: ${error.message}`);
+    }
+}
